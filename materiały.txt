@@ -1,0 +1,15 @@
+Linki (Windows):
+https://msdn.microsoft.com/en-us/library/vs/alm/bb205075(v=vs.85).aspx
+https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/3299acba-2a0f-4892-81bf-0ec0cc910411/kmdod-on-non-uefi-graphics-adapter?forum=wdk#e4852db0-1e77-4871-b265-b581492af4b5
+https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/19128f13-68fa-4884-a659-b2e6407f9943/kmdod-for-two-display-monitors-second-monitor-not-getting-detected?forum=wdk#9711698b-7d5f-4269-a128-f3aff99794a4
+https://msdn.microsoft.com/pl-pl/library/windows/desktop/ee417025(v=vs.85).aspx#multiple_monitors
+https://github.com/humphd/VncSharp
+https://blogs.msdn.microsoft.com/winsdk/2015/09/10/virtual-desktop-switching-in-windows-10/
+https://nullpwd.wordpress.com/2013/05/25/writing-a-virtual-desktop-system-in-cs-with-winapi/
+https://msdn.microsoft.com/en-us/library/windows/hardware/ff569513(v=vs.85).aspx
+https://msdn.microsoft.com/en-us/library/windows/hardware/ff554690(v=vs.85).aspx
+https://github.com/Microsoft/Windows-driver-samples/tree/master/video/KMDOD
+http://spacedesk.ph/features/
+
+Wnioski:
+Na Windows da siê zaimplementowaæ wymagane rozwi¹zanie jednak w Internecie nie ma informacji na ten temat. Kluczem jest napisanie "WDDM Filter Hook Display Driver", do którego nie ma dokumentacji.
