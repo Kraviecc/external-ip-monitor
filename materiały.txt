@@ -13,3 +13,16 @@ http://spacedesk.ph/features/
 
 Wnioski:
 Na Windows da siê zaimplementowaæ wymagane rozwi¹zanie jednak w Internecie nie ma informacji na ten temat. Kluczem jest napisanie "WDDM Filter Hook Display Driver", do którego nie ma dokumentacji.
+
+------------------
+
+Linki (Linux):
+http://www.linuxquestions.org/questions/linux-desktop-74/move-application-between-desktops-736982/
+http://superuser.com/questions/71794/extend-linux-desktop-to-another-x-windows-display
+http://superuser.com/questions/424410/extend-desktop-to-monitor-over-lan
+http://stackoverflow.com/questions/12050021/how-to-make-xvfb-display-visible
+http://askubuntu.com/questions/28608/how-do-you-use-an-android-tablet-as-a-second-display/403212#403212
+http://askubuntu.com/questions/28608/how-do-you-use-an-android-tablet-as-a-second-display/613361#613361
+http://unix.stackexchange.com/questions/12641/how-to-extend-my-desktop-to-a-second-connected-screen/12647#12647
+https://bbs.archlinux.org/viewtopic.php?id=180904
+http://askubuntu.com/questions/453109/add-fake-display-when-no-monitor-is-plugged-in
