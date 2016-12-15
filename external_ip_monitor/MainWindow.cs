@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 using Gtk;
 
 public partial class MainWindow : Gtk.Window
@@ -10,12 +13,17 @@ public partial class MainWindow : Gtk.Window
 
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
-		Application.Quit();
+		Gtk.Application.Quit();
 		a.RetVal = true;
 	}
 
 	protected void OnBtnStartClicked(object sender, EventArgs e)
 	{
-		external_ip_monitor.Server.StartListening();
+		Bitmap bmpScreenshot = new Bitmap(Screen.Width, Screen.Height);
+		Graphics g = Graphics.FromImage(bmpScreenshot);
+		g.CopyFromScreen(1920, 0, 0, 0, new Size(1920, 1080));
+
+		bmpScreenshot.Save("test.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+		//external_ip_monitor.Server.StartListening();
 	}
 }
