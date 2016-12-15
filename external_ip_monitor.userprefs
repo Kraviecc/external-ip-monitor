@@ -1,7 +1,7 @@
 ﻿<Properties StartupConfiguration="{2AE2B80C-CB4C-470B-B42E-3CE29759C939}|Default">
   <MonoDevelop.Ide.Workbench ActiveDocument="external_ip_monitor/MainWindow.cs">
     <Files>
-      <File FileName="external_ip_monitor/MainWindow.cs" Line="24" Column="54" />
+      <File FileName="external_ip_monitor/MainWindow.cs" Line="28" Column="50" />
       <File FileName="client/Form1.cs" Line="5" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
