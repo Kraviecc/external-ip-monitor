@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/external_ip_monitor_client/obj/x86/Debug
+/external_ip_monitor
+/.vs/external_ip_monitor/v14
+/client/bin/Debug
+/client/obj/Debug
