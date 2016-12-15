@@ -3,7 +3,7 @@
 
 public partial class MainWindow
 {
-	private global::Gtk.Fixed fixed1;
+	private global::Gtk.Fixed fixed2;
 
 	private global::Gtk.Button btnStart;
 
@@ -12,23 +12,23 @@ public partial class MainWindow
 		global::Stetic.Gui.Initialize(this);
 		// Widget MainWindow
 		this.Name = "MainWindow";
-		this.Title = global::Mono.Unix.Catalog.GetString("Server");
+		this.Title = global::Mono.Unix.Catalog.GetString("Client");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child MainWindow.Gtk.Container+ContainerChild
-		this.fixed1 = new global::Gtk.Fixed();
-		this.fixed1.Name = "fixed1";
-		this.fixed1.HasWindow = false;
-		// Container child fixed1.Gtk.Fixed+FixedChild
+		this.fixed2 = new global::Gtk.Fixed();
+		this.fixed2.Name = "fixed2";
+		this.fixed2.HasWindow = false;
+		// Container child fixed2.Gtk.Fixed+FixedChild
 		this.btnStart = new global::Gtk.Button();
 		this.btnStart.CanFocus = true;
 		this.btnStart.Name = "btnStart";
 		this.btnStart.UseUnderline = true;
 		this.btnStart.Label = global::Mono.Unix.Catalog.GetString("Start");
-		this.fixed1.Add(this.btnStart);
-		global::Gtk.Fixed.FixedChild w1 = ((global::Gtk.Fixed.FixedChild)(this.fixed1[this.btnStart]));
-		w1.X = 18;
-		w1.Y = 11;
-		this.Add(this.fixed1);
+		this.fixed2.Add(this.btnStart);
+		global::Gtk.Fixed.FixedChild w1 = ((global::Gtk.Fixed.FixedChild)(this.fixed2[this.btnStart]));
+		w1.X = 150;
+		w1.Y = 102;
+		this.Add(this.fixed2);
 		if ((this.Child != null))
 		{
 			this.Child.ShowAll();

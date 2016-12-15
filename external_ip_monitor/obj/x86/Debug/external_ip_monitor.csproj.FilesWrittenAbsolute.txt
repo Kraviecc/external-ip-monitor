@@ -1,6 +1,0 @@
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/obj/x86/Debug/external_ip_monitor.gtk-gui.gui.stetic
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/bin/Debug/external_ip_monitor.exe.mdb
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/bin/Debug/external_ip_monitor.exe
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/obj/x86/Debug/external_ip_monitor.exe
-/home/kraviec/Projects/external_ip_monitor/external_ip_monitor/obj/x86/Debug/external_ip_monitor.exe.mdb

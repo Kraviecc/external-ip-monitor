@@ -16,6 +16,6 @@ public partial class MainWindow : Gtk.Window
 
 	protected void OnBtnStartClicked(object sender, EventArgs e)
 	{
-		external_ip_monitor.Server.StartListening();
+		external_ip_monitor_client.Client.StartClient();
 	}
 }

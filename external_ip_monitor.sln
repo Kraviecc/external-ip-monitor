@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "external_ip_monitor", "external_ip_monitor\external_ip_monitor.csproj", "{2AE2B80C-CB4C-470B-B42E-3CE29759C939}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "external_ip_monitor_client", "external_ip_monitor_client\external_ip_monitor_client.csproj", "{24809FE2-403F-4993-8DC4-11E9C27A5494}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{2AE2B80C-CB4C-470B-B42E-3CE29759C939}.Debug|x86.Build.0 = Debug|x86
 		{2AE2B80C-CB4C-470B-B42E-3CE29759C939}.Release|x86.ActiveCfg = Release|x86
 		{2AE2B80C-CB4C-470B-B42E-3CE29759C939}.Release|x86.Build.0 = Release|x86
+		{24809FE2-403F-4993-8DC4-11E9C27A5494}.Debug|x86.ActiveCfg = Debug|x86
+		{24809FE2-403F-4993-8DC4-11E9C27A5494}.Debug|x86.Build.0 = Debug|x86
+		{24809FE2-403F-4993-8DC4-11E9C27A5494}.Release|x86.ActiveCfg = Release|x86
+		{24809FE2-403F-4993-8DC4-11E9C27A5494}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{2AE2B80C-CB4C-470B-B42E-3CE29759C939}</ProjectGuid>
+    <ProjectGuid>{24809FE2-403F-4993-8DC4-11E9C27A5494}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>external_ip_monitor</RootNamespace>
-    <AssemblyName>external_ip_monitor</AssemblyName>
+    <RootNamespace>external_ip_monitor_client</RootNamespace>
+    <AssemblyName>external_ip_monitor_client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -58,7 +58,7 @@
     <Compile Include="MainWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="gtk-gui\MainWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
