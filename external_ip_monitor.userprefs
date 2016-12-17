@@ -1,14 +1,13 @@
-﻿<Properties StartupConfiguration="{24809FE2-403F-4993-8DC4-11E9C27A5494}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="external_ip_monitor_client/Client.cs">
+﻿<Properties StartupConfiguration="{2AE2B80C-CB4C-470B-B42E-3CE29759C939}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="external_ip_monitor/MainWindow.cs">
     <Files>
-      <File FileName="external_ip_monitor_client/Client.cs" Line="1" Column="1" />
+      <File FileName="external_ip_monitor/MainWindow.cs" Line="28" Column="50" />
+      <File FileName="client/Form1.cs" Line="5" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/home/kraviec/Projects/external_ip_monitor/external_ip_monitor_client/Client.cs" line="46" column="1" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.ItemProperties.external__ip__monitor PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
