@@ -26,6 +26,8 @@ namespace client
             Graphics g = Graphics.FromImage(bmpScreenshot);
             g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
 
+            Cursor.Draw(g, new Rectangle(Cursor.Position.X, Cursor.Position.Y, Cursor.Size.Width, Cursor.Size.Height));
+
             MemoryStream memoryStream = new MemoryStream();
             bmpScreenshot.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
 
