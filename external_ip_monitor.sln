@@ -2,10 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "external_ip_monitor", "external_ip_monitor\external_ip_monitor.csproj", "{2AE2B80C-CB4C-470B-B42E-3CE29759C939}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "external_ip_monitor_client", "external_ip_monitor_client\external_ip_monitor_client.csproj", "{24809FE2-403F-4993-8DC4-11E9C27A5494}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client", "client\client.csproj", "{95451E09-8181-43D3-B1B7-D2E8DA99A978}"
 EndProject
 Global
