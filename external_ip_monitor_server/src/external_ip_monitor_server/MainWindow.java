@@ -19,10 +19,12 @@ public class MainWindow {
 
 	private JFrame frame;
 	private JTextField txtPort;
-	
+
 	private int port;
 	private double resolutionWidth;
 	private double resolutionHeight;
+	private double remoteResolutionHeight;
+	private double remoteResolutionWidth;
 
 	/**
 	 * Launch the application.
@@ -55,46 +57,64 @@ public class MainWindow {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(3, 2, 0, 0));
-		
+
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				port = Integer.parseInt(txtPort.getText());
-				
+
 				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 				resolutionWidth = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getWidth();
 				resolutionHeight = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getHeight();
-				
+
 				try {
-				JavaSocket.connect(port);
-				}
-				catch (IOException exception) {
+					JavaSocket.connect(port);
+
+					String remoteResolution = JavaSocket.getRemoteResolution();
+					String[] remoteWidthHeight = remoteResolution.split("x");
+
+					if (remoteWidthHeight.length == 2) {
+						remoteResolutionWidth = Double.parseDouble(remoteWidthHeight[0]);
+						remoteResolutionHeight = Double.parseDouble(remoteWidthHeight[1]);
+					} else {
+						JOptionPane.showMessageDialog(null, "Error: " + "wrong resolution format from remote device.");
+						JavaSocket.disconnect();
+						return;
+					}
+					
+					
+				} catch (IOException exception) {
 					JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());
+					JavaSocket.disconnect();
 					return;
 				}
-				
-				
+
+				JavaSocket.disconnect();
 			}
 		});
-		
+
 		JLabel lblPort = new JLabel("Port");
 		lblPort.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(lblPort);
-		
+
 		txtPort = new JTextField();
 		txtPort.setText("4343");
 		txtPort.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(txtPort);
 		txtPort.setColumns(10);
 		frame.getContentPane().add(btnConnect);
-		
+
 		JButton btnDisconnect = new JButton("Disconnect");
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 			}
 		});
 		frame.getContentPane().add(btnDisconnect);
 	}
 
+	
+	private void calculateExtendedResolution(){
+		
+	}
 }

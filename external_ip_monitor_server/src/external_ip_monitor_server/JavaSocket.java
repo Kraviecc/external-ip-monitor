@@ -7,14 +7,31 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class JavaSocket {
+	private static ServerSocket clientSocket;
+	private static InputStream is;
+	private static OutputStream os;
+	
 	public static void connect(int port) throws IOException{
-		ServerSocket clientSocket = new ServerSocket(port, 10);
+		clientSocket = new ServerSocket(port, 10);
 		Socket socket = clientSocket.accept();
 		
-		InputStream is = socket.getInputStream();
-        OutputStream os = socket.getOutputStream();
+		is = socket.getInputStream();
+        os = socket.getOutputStream();
 
-        // Receiving
+//        // Sending
+//        String toSend = "Echo: " + received;
+//        byte[] toSendBytes = toSend.getBytes();
+//        int toSendLen = toSendBytes.length;
+//        byte[] toSendLenBytes = new byte[4];
+//        toSendLenBytes[0] = (byte)(toSendLen & 0xff);
+//        toSendLenBytes[1] = (byte)((toSendLen >> 8) & 0xff);
+//        toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
+//        toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
+//        os.write(toSendLenBytes);
+//        os.write(toSendBytes);
+	}
+	
+	public static String getRemoteResolution() throws IOException{
         byte[] lenBytes = new byte[4];
         is.read(lenBytes, 0, 4);
         int len = (((lenBytes[3] & 0xff) << 24) | ((lenBytes[2] & 0xff) << 16) |
@@ -24,19 +41,15 @@ public class JavaSocket {
         String received = new String(receivedBytes, 0, len);
         
         System.out.println("Received: " + received);
-
-        // Sending
-        String toSend = "Echo: " + received;
-        byte[] toSendBytes = toSend.getBytes();
-        int toSendLen = toSendBytes.length;
-        byte[] toSendLenBytes = new byte[4];
-        toSendLenBytes[0] = (byte)(toSendLen & 0xff);
-        toSendLenBytes[1] = (byte)((toSendLen >> 8) & 0xff);
-        toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
-        toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
-        os.write(toSendLenBytes);
-        os.write(toSendBytes);
-
-        clientSocket.close();
+        
+        return received;
+	}
+	
+	public static void disconnect(){
+		try {
+			clientSocket.close();
+		} catch (IOException e) {
+			System.out.println("Error while disconnecting.");
+		}
 	}
 }

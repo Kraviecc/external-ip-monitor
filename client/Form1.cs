@@ -21,7 +21,11 @@ namespace client
         private void btnConnect_Click(object sender, EventArgs e)
         {
             AsynchronousClient asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
-            asynchronousClient.StartClient();
+
+            string resolution = System.Windows.SystemParameters.PrimaryScreenWidth.ToString() 
+                        + "x" + System.Windows.SystemParameters.PrimaryScreenHeight.ToString();
+
+            asynchronousClient.StartClient(resolution);
 
             //ImageForm imageForm = new ImageForm();
             //imageForm.pictureBox.Image = Image.FromStream(new MemoryStream()); //receive screenshot and put here
