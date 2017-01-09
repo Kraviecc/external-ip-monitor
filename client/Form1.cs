@@ -20,22 +20,13 @@ namespace client
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            //AsynchronousClient.StartClient();
-            
-            Bitmap bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(bmpScreenshot);
-            g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
+            AsynchronousClient asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
+            asynchronousClient.StartClient();
 
-            Cursor.Draw(g, new Rectangle(Cursor.Position.X, Cursor.Position.Y, Cursor.Size.Width, Cursor.Size.Height));
+            //ImageForm imageForm = new ImageForm();
+            //imageForm.pictureBox.Image = Image.FromStream(new MemoryStream()); //receive screenshot and put here
 
-            MemoryStream memoryStream = new MemoryStream();
-            bmpScreenshot.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-
-
-            ImageForm imageForm = new client.ImageForm();
-            imageForm.pictureBox.Image = Image.FromStream(memoryStream);
-
-            imageForm.Show();
+            //imageForm.Show();
         }
     }
 }

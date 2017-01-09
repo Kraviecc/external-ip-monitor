@@ -1,14 +1,12 @@
 package external_ip_monitor_server;
 
 import java.awt.EventQueue;
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -20,10 +18,8 @@ import java.awt.event.ActionEvent;
 public class MainWindow {
 
 	private JFrame frame;
-	private final JTextField txtAddress = new JTextField();
 	private JTextField txtPort;
 	
-	private String IP;
 	private int port;
 	private double resolutionWidth;
 	private double resolutionHeight;
@@ -60,18 +56,9 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(3, 2, 0, 0));
 		
-		JLabel lblAddres = new JLabel("IP:");
-		lblAddres.setHorizontalAlignment(SwingConstants.CENTER);
-		frame.getContentPane().add(lblAddres);
-		txtAddress.setHorizontalAlignment(SwingConstants.CENTER);
-		txtAddress.setText("127.0.0.1");
-		frame.getContentPane().add(txtAddress);
-		txtAddress.setColumns(10);
-		
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				IP = txtAddress.getText();
 				port = Integer.parseInt(txtPort.getText());
 				
 				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -79,7 +66,7 @@ public class MainWindow {
 				resolutionHeight = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getHeight();
 				
 				try {
-				JavaSocket.connect(port, IP);
+				JavaSocket.connect(port);
 				}
 				catch (IOException exception) {
 					JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());

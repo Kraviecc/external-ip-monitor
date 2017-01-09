@@ -22,7 +22,8 @@ namespace client
     public class AsynchronousClient
     {
         // The port number for the remote device.
-        private const int port = 11000;
+        private int port;
+        private string IP;
 
         // ManualResetEvent instances signal completion.
         private static ManualResetEvent connectDone =
@@ -35,7 +36,13 @@ namespace client
         // The response from the remote device.
         private static String response = String.Empty;
 
-        public static void StartClient()
+        public AsynchronousClient(int port, string IP)
+        {
+            this.port = port;
+            this.IP = IP;
+        }
+
+        public void StartClient()
         {
             // Connect to a remote device.
             try
@@ -43,12 +50,13 @@ namespace client
                 // Establish the remote endpoint for the socket.
                 // The name of the 
                 // remote device is "host.contoso.com".
-                IPHostEntry ipHostInfo = Dns.GetHostEntry("127.0.0.1");
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(IP);
+
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
                 // Create a TCP/IP socket.
-                Socket client = new Socket(AddressFamily.InterNetwork,
+                Socket client = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect to the remote endpoint.
@@ -78,7 +86,7 @@ namespace client
             }
         }
 
-        private static void ConnectCallback(IAsyncResult ar)
+        private void ConnectCallback(IAsyncResult ar)
         {
             try
             {
@@ -100,7 +108,7 @@ namespace client
             }
         }
 
-        private static void Receive(Socket client)
+        private void Receive(Socket client)
         {
             try
             {
@@ -118,7 +126,7 @@ namespace client
             }
         }
 
-        private static void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveCallback(IAsyncResult ar)
         {
             try
             {
@@ -156,17 +164,22 @@ namespace client
             }
         }
 
-        private static void Send(Socket client, String data)
+        private void Send(Socket client, String data)
         {
+            var length = BitConverter.GetBytes(Encoding.ASCII.GetByteCount(data));
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+            // Send length
+            client.BeginSend(BitConverter.GetBytes(Encoding.ASCII.GetByteCount(data)), 0, length.Length, 0,
+                new AsyncCallback(SendCallback), client);
 
             // Begin sending the data to the remote device.
             client.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), client);
         }
 
-        private static void SendCallback(IAsyncResult ar)
+        private void SendCallback(IAsyncResult ar)
         {
             try
             {

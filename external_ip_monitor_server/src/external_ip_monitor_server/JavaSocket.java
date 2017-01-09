@@ -3,14 +3,16 @@ package external_ip_monitor_server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class JavaSocket {
-	public static void connect(int port, String ip) throws IOException{
-		Socket clientSocket = new Socket(ip, port);
-
-		InputStream is = clientSocket.getInputStream();
-        OutputStream os = clientSocket.getOutputStream();
+	public static void connect(int port) throws IOException{
+		ServerSocket clientSocket = new ServerSocket(port, 10);
+		Socket socket = clientSocket.accept();
+		
+		InputStream is = socket.getInputStream();
+        OutputStream os = socket.getOutputStream();
 
         // Receiving
         byte[] lenBytes = new byte[4];
@@ -20,7 +22,7 @@ public class JavaSocket {
         byte[] receivedBytes = new byte[len];
         is.read(receivedBytes, 0, len);
         String received = new String(receivedBytes, 0, len);
-
+        
         System.out.println("Received: " + received);
 
         // Sending
