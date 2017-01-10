@@ -24,6 +24,7 @@ namespace client
         // The port number for the remote device.
         private int port;
         private string IP;
+        private Socket client;
 
         // ManualResetEvent instances signal completion.
         private static ManualResetEvent connectDone =
@@ -44,41 +45,22 @@ namespace client
 
         public void StartClient(string resolution)
         {
-            // Connect to a remote device.
             try
             {
-                // Establish the remote endpoint for the socket.
-                // The name of the 
-                // remote device is "host.contoso.com".
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(IP);
 
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
-                // Create a TCP/IP socket.
-                Socket client = new Socket(ipAddress.AddressFamily,
+                client = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
 
-                // Connect to the remote endpoint.
                 client.BeginConnect(remoteEP,
                     new AsyncCallback(ConnectCallback), client);
                 connectDone.WaitOne();
 
-                // Send test data to the remote device.
                 Send(client, resolution);
                 sendDone.WaitOne();
-
-                // Receive the response from the remote device.
-                Receive(client);
-                receiveDone.WaitOne();
-
-                // Write the response to the console.
-                Console.WriteLine("Response received : {0}", response);
-
-                // Release the socket.
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-
             }
             catch (Exception e)
             {
@@ -197,6 +179,20 @@ namespace client
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        public byte[] Receive()
+        {
+            Receive(client);
+            receiveDone.WaitOne();
+
+            return Encoding.ASCII.GetBytes(response);
+        }
+
+        public void Disconnect()
+        {
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
         }
     }
 }

@@ -93,8 +93,8 @@ public class MainWindow {
 					Runnable myRunnable = new Runnable() {
 
 						public void run() {
-							try {
-								while (true) {
+							while (true) {
+								try {
 									if (interrupt) {
 										resetResolution();
 										break;
@@ -103,11 +103,9 @@ public class MainWindow {
 									byte[] screenshot = generateScreenshot();
 
 									JavaSocket.send(screenshot);
+								} catch (IOException e) {
+									System.out.println("Error: " + e.getMessage());
 								}
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
-								JavaSocket.disconnect();
-								return;
 							}
 						};
 					};

@@ -13,6 +13,9 @@ namespace client
 {
     public partial class Form1 : Form
     {
+        private ImageForm imageForm = new ImageForm();
+        private AsynchronousClient asynchronousClient;
+
         public Form1()
         {
             InitializeComponent();
@@ -20,17 +23,40 @@ namespace client
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            AsynchronousClient asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
+            asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
 
-            string resolution = System.Windows.SystemParameters.PrimaryScreenWidth.ToString() 
+            string resolution = System.Windows.SystemParameters.PrimaryScreenWidth.ToString()
                         + "x" + System.Windows.SystemParameters.PrimaryScreenHeight.ToString();
+            try
+            {
+                asynchronousClient.StartClient(resolution);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+                return;
+            }
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += Bw_DoWork;
 
-            asynchronousClient.StartClient(resolution);
+            imageForm.Show();
 
-            //ImageForm imageForm = new ImageForm();
-            //imageForm.pictureBox.Image = Image.FromStream(new MemoryStream()); //receive screenshot and put here
+            bw.RunWorkerAsync();
+        }
 
-            //imageForm.Show();
+        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                while (true)
+                {
+                    imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(asynchronousClient.Receive()));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
         }
     }
 }
