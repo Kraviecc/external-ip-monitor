@@ -17,18 +17,6 @@ public class JavaSocket {
 		
 		is = socket.getInputStream();
         os = socket.getOutputStream();
-
-//        // Sending
-//        String toSend = "Echo: " + received;
-//        byte[] toSendBytes = toSend.getBytes();
-//        int toSendLen = toSendBytes.length;
-//        byte[] toSendLenBytes = new byte[4];
-//        toSendLenBytes[0] = (byte)(toSendLen & 0xff);
-//        toSendLenBytes[1] = (byte)((toSendLen >> 8) & 0xff);
-//        toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
-//        toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
-//        os.write(toSendLenBytes);
-//        os.write(toSendBytes);
 	}
 	
 	public static String getRemoteResolution() throws IOException{
@@ -43,6 +31,19 @@ public class JavaSocket {
         System.out.println("Received: " + received);
         
         return received;
+	}
+	
+	public static void send(byte[] data) throws IOException{
+      int toSendLen = data.length;
+      byte[] toSendLenBytes = new byte[4];
+      
+      toSendLenBytes[0] = (byte)(toSendLen & 0xff);
+      toSendLenBytes[1] = (byte)((toSendLen >> 8) & 0xff);
+      toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
+      toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
+      
+      os.write(toSendLenBytes);
+      os.write(data);
 	}
 	
 	public static void disconnect(){

@@ -12,7 +12,9 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.awt.event.ActionEvent;
 
 public class MainWindow {
@@ -27,6 +29,8 @@ public class MainWindow {
 	private double remoteResolutionWidth;
 	private double fullResolutionHeight;
 	private double fullResolutionWidth;
+	private boolean interrupt = false;
+	private final String SSNAME = "ss.jpg";
 
 	/**
 	 * Launch the application.
@@ -86,6 +90,31 @@ public class MainWindow {
 
 					calculateSetExtendedResolution();
 
+					Runnable myRunnable = new Runnable() {
+
+						public void run() {
+							try {
+								while (true) {
+									if (interrupt) {
+										resetResolution();
+										break;
+									}
+
+									byte[] screenshot = generateScreenshot();
+
+									JavaSocket.send(screenshot);
+								}
+							} catch (IOException e) {
+								JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+								JavaSocket.disconnect();
+								return;
+							}
+						};
+					};
+
+					Thread thread = new Thread(myRunnable);
+					thread.start();
+
 				} catch (IOException exception) {
 					JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());
 					JavaSocket.disconnect();
@@ -110,30 +139,39 @@ public class MainWindow {
 		JButton btnDisconnect = new JButton("Disconnect");
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				interrupt = true;
 			}
 		});
 		frame.getContentPane().add(btnDisconnect);
 	}
 
-	private void calculateSetExtendedResolution() {
+	private void calculateSetExtendedResolution() throws IOException {
 		fullResolutionHeight = resolutionHeight;
 		fullResolutionWidth = resolutionWidth + remoteResolutionWidth;
 
-		try {
-			//xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
-			String[] xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
-					"--output VGA-1", "--panning " + fullResolutionWidth + "x" + fullResolutionHeight + "+0+0"};
-			new ProcessBuilder(xrandr).start();
-			
-			//xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
-			xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
-					"--output VGA-1", "--panning " + resolutionWidth + "x" + resolutionHeight + "+0+0"};
-			new ProcessBuilder(xrandr).start();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
-			JavaSocket.disconnect();
-			return;
-		}
+		// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
+		String[] xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
+				"--output VGA-1", "--panning " + fullResolutionWidth + "x" + fullResolutionHeight + "+0+0" };
+		new ProcessBuilder(xrandr).start();
+
+		// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
+		xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight, "--output VGA-1",
+				"--panning " + resolutionWidth + "x" + resolutionHeight + "+0+0" };
+		new ProcessBuilder(xrandr).start();
+	}
+
+	private void resetResolution() throws IOException {
+		// xrandr -s 1920x1080
+		String[] xrandr = new String[] { "xrandr", "-s " + resolutionWidth + "x" + resolutionHeight };
+		new ProcessBuilder(xrandr).start();
+	}
+
+	private byte[] generateScreenshot() throws IOException {
+		String[] shutter = new String[] { "shutter", "--select=100,100,500,500", "--output=" + SSNAME,
+				"--include_cursor", "--exit_after_capture", "--no_session" };
+
+		new ProcessBuilder(shutter).start();
+
+		return Files.readAllBytes(new File(SSNAME).toPath());
 	}
 }
