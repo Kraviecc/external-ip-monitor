@@ -25,6 +25,8 @@ public class MainWindow {
 	private double resolutionHeight;
 	private double remoteResolutionHeight;
 	private double remoteResolutionWidth;
+	private double fullResolutionHeight;
+	private double fullResolutionWidth;
 
 	/**
 	 * Launch the application.
@@ -81,8 +83,9 @@ public class MainWindow {
 						JavaSocket.disconnect();
 						return;
 					}
-					
-					
+
+					calculateSetExtendedResolution();
+
 				} catch (IOException exception) {
 					JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());
 					JavaSocket.disconnect();
@@ -113,8 +116,24 @@ public class MainWindow {
 		frame.getContentPane().add(btnDisconnect);
 	}
 
-	
-	private void calculateExtendedResolution(){
-		
+	private void calculateSetExtendedResolution() {
+		fullResolutionHeight = resolutionHeight;
+		fullResolutionWidth = resolutionWidth + remoteResolutionWidth;
+
+		try {
+			//xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
+			String[] xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
+					"--output VGA-1", "--panning " + fullResolutionWidth + "x" + fullResolutionHeight + "+0+0"};
+			new ProcessBuilder(xrandr).start();
+			
+			//xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
+			xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
+					"--output VGA-1", "--panning " + resolutionWidth + "x" + resolutionHeight + "+0+0"};
+			new ProcessBuilder(xrandr).start();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+			JavaSocket.disconnect();
+			return;
+		}
 	}
 }
