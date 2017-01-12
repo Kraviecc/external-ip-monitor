@@ -60,7 +60,7 @@
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(134, 20);
             this.txtAddress.TabIndex = 2;
-            this.txtAddress.Text = "127.0.0.1";
+            this.txtAddress.Text = "192.168.50.142";
             this.txtAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtPort
