@@ -43,6 +43,7 @@ public class JavaSocket {
       toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
       
       os.write(toSendLenBytes);
+      getRemoteResolution();
       os.write(data);
 	}
 	

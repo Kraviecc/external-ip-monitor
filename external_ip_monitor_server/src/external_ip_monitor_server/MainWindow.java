@@ -9,9 +9,12 @@ import javax.swing.JOptionPane;
 
 import java.awt.GridLayout;
 import javax.swing.JTextField;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -103,7 +106,11 @@ public class MainWindow {
 									byte[] screenshot = generateScreenshot();
 
 									JavaSocket.send(screenshot);
-								} catch (IOException e) {
+									
+									Thread.sleep(1000);
+									
+									JavaSocket.getRemoteResolution();
+								} catch (IOException | InterruptedException e) {
 									System.out.println("Error: " + e.getMessage());
 								}
 							}
@@ -169,7 +176,7 @@ public class MainWindow {
 				"--include_cursor", "--exit_after_capture", "--no_session" };
 
 		new ProcessBuilder(shutter).start();
-
+		
 		return Files.readAllBytes(new File(SSNAME).toPath());
 	}
 }
