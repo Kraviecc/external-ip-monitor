@@ -2,23 +2,19 @@ package external_ip_monitor_server;
 
 import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.GridLayout;
-import javax.swing.JTextField;
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.awt.event.ActionEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class MainWindow {
 
@@ -100,16 +96,16 @@ public class MainWindow {
 								try {
 									if (interrupt) {
 										resetResolution();
+										JavaSocket.disconnect();
 										break;
 									}
 
 									byte[] screenshot = generateScreenshot();
 
 									JavaSocket.send(screenshot);
-									
-									Thread.sleep(1000);
-									
 									JavaSocket.getRemoteResolution();
+									
+									Thread.sleep(70);
 								} catch (IOException | InterruptedException e) {
 									System.out.println("Error: " + e.getMessage());
 								}
@@ -125,8 +121,6 @@ public class MainWindow {
 					JavaSocket.disconnect();
 					return;
 				}
-
-				JavaSocket.disconnect();
 			}
 		});
 
