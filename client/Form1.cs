@@ -15,7 +15,7 @@ namespace client
     public partial class Form1 : Form
     {
         private ImageForm imageForm = new ImageForm();
-        private AsynchronousClient asynchronousClient;
+        private SynchronousClient asynchronousClient;
 
         public Form1()
         {
@@ -24,7 +24,7 @@ namespace client
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
+            asynchronousClient = new SynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
 
             string resolution = System.Windows.SystemParameters.PrimaryScreenWidth.ToString()
                         + "x" + System.Windows.SystemParameters.PrimaryScreenHeight.ToString();
