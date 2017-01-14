@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using System.Collections.Generic;
 
 namespace client
 {
@@ -17,6 +18,7 @@ namespace client
         public byte[] buffer = new byte[BufferSize];
         // Received data string.
         public StringBuilder sb = new StringBuilder();
+        public int ImageSize;
     }
 
     public class AsynchronousClient
@@ -25,6 +27,8 @@ namespace client
         private int port;
         private string IP;
         private Socket client;
+        private static byte[] _imageBuff;
+        private static int _totBytesRead = 0;
 
         // ManualResetEvent instances signal completion.
         private static ManualResetEvent connectDone =
@@ -35,7 +39,7 @@ namespace client
             new ManualResetEvent(false);
 
         // The response from the remote device.
-        private static String response = String.Empty;
+        private List<byte> response = new List<byte>();
 
         public AsynchronousClient(int port, string IP)
         {
@@ -100,12 +104,33 @@ namespace client
 
                 // Begin receiving the data from the remote device.
                 client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state);
+                    new AsyncCallback(ReceiveHeaderCallback), state);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        public void ReceiveHeaderCallback(IAsyncResult ar)
+        {
+            // Retrieve the state object and the handler socket
+            // from the asynchronous state object.
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+
+            // Read data from the client socket. 
+            int bytesRead = handler.EndReceive(ar);
+
+            //we need to add error handler here...but later
+            state.ImageSize = BitConverter.ToInt32(state.buffer, 0);
+            _imageBuff = new byte[state.ImageSize];
+            _totBytesRead = 0;
+
+            Send(client, "OK");
+
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+               new AsyncCallback(ReceiveCallback), state);
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -119,23 +144,28 @@ namespace client
 
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
+                Console.WriteLine("Bytes read: " + bytesRead);
 
                 if (bytesRead > 0)
                 {
                     // There might be more data, so store the data received so far.
-                    state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+                    byte[] tempArray = new byte[bytesRead];
+                    Array.Copy(state.buffer, tempArray, bytesRead);
+                    response.AddRange(tempArray);
 
-                    // Get the rest of the data.
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    _totBytesRead += bytesRead;
+
+                    if (_totBytesRead < state.ImageSize)
+                    {
+                        // Get the rest of the data.
+                        client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
+                    }
+                    else
+                        receiveDone.Set();
                 }
                 else
                 {
-                    // All the data has arrived; put it in response.
-                    if (state.sb.Length > 1)
-                    {
-                        response = state.sb.ToString();
-                    }
                     // Signal that all bytes have been received.
                     receiveDone.Set();
                 }
@@ -146,7 +176,7 @@ namespace client
             }
         }
 
-        private void Send(Socket client, String data)
+        private void Send(Socket client, string data)
         {
             var length = BitConverter.GetBytes(Encoding.ASCII.GetByteCount(data));
             // Convert the string data to byte data using ASCII encoding.
@@ -186,7 +216,8 @@ namespace client
             Receive(client);
             receiveDone.WaitOne();
 
-            return Encoding.ASCII.GetBytes(response);
+            Send(client, "OK");
+            return response.ToArray();
         }
 
         public void Disconnect()
