@@ -7,3 +7,4 @@
 /.vs/external_ip_monitor/v14
 /client/bin/Debug
 /client/obj/Debug
+/external_ip_monitor_server/bin/external_ip_monitor_server

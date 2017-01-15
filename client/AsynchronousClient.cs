@@ -52,19 +52,32 @@ namespace client
         {
             // length
             byte[] lengthByte = new byte[4];
-            client.Receive(lengthByte);
+            client.Receive(lengthByte, 4, SocketFlags.None);
             int length = BitConverter.ToInt32(lengthByte, 0);
 
             // send ok
-            // length
-            client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
-            // data
-            client.Send(Encoding.ASCII.GetBytes("OK"));
+            //client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
+            //client.Send(Encoding.ASCII.GetBytes("OK"));
 
             // data
-            byte[] data = new byte[length];
-            client.Receive(data);
+            byte[] data = new byte[0];
+            try
+            {
+                int receivedBytes = 0;
+                int bytesPosition = 0;
+                data = new byte[length];
 
+                while (bytesPosition != length)
+                {
+                    receivedBytes = client.Receive(data,bytesPosition,length - bytesPosition,SocketFlags.None);
+                    bytesPosition += receivedBytes;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Receive length: " + length);
+                Console.WriteLine("Receive ss: " + ex.Message);
+            }
             // send ok
             client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
             client.Send(Encoding.ASCII.GetBytes("OK"));
