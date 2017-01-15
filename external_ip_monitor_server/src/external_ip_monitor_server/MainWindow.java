@@ -150,16 +150,18 @@ public class MainWindow {
 		try {
 			// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
 			String[] xrandr = new String[] { "xrandr",
-					"--fb " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output VGA-1",
-					"--panning " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
+					"--fb", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
+					"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
 			ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
 			Process pXrandr = pbXrandr.start();
 			pXrandr.waitFor();
-
+			
+			Thread.sleep(300);
+			
 			// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
 			xrandr = new String[] { "xrandr",
-					"--fb " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output VGA-1",
-					"--panning " + resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
+					"--fb", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
+					"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
 			pbXrandr = new ProcessBuilder(xrandr);
 			pXrandr = pbXrandr.start();
 			pXrandr.waitFor();
@@ -170,12 +172,14 @@ public class MainWindow {
 
 	private void resetResolution() throws IOException {
 		// xrandr -s 1920x1080
-		String[] xrandr = new String[] { "xrandr", "-s " + resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
+		String[] xrandr = new String[] { "xrandr", "-s", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
 		new ProcessBuilder(xrandr).start();
 	}
 
 	private byte[] generateScreenshot() throws IOException {
-		String[] shutter = new String[] { "shutter", "--select=1,1,1680,1050", "--output=" + SSNAME,
+		String[] shutter = new String[] { "shutter", "--select=" + resolutionWidth.intValue() + ",1,"
+				+ remoteResolutionWidth.intValue() 
+				+ "," + resolutionHeight.intValue(), "--output=" + SSNAME,
 				"--include_cursor", "--exit_after_capture", "--no_session" };
 
 		try {
