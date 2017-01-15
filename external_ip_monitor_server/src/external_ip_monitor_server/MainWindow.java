@@ -22,12 +22,12 @@ public class MainWindow {
 	private JTextField txtPort;
 
 	private int port;
-	private double resolutionWidth;
-	private double resolutionHeight;
-	private double remoteResolutionHeight;
-	private double remoteResolutionWidth;
-	private double fullResolutionHeight;
-	private double fullResolutionWidth;
+	private Double resolutionWidth;
+	private Double resolutionHeight;
+	private Double remoteResolutionHeight;
+	private Double remoteResolutionWidth;
+	private Double fullResolutionHeight;
+	private Double fullResolutionWidth;
 	private boolean interrupt = false;
 	private final String SSNAME = "ss.jpg";
 
@@ -103,11 +103,10 @@ public class MainWindow {
 									byte[] screenshot = generateScreenshot();
 
 									JavaSocket.send(screenshot);
-									JavaSocket.getRemoteResolution();
-									
-									Thread.sleep(70);
-								} catch (IOException | InterruptedException e) {
+								} catch (IOException e) {
 									System.out.println("Error: " + e.getMessage());
+									JavaSocket.disconnect();
+									return;
 								}
 							}
 						};
@@ -147,30 +146,47 @@ public class MainWindow {
 	private void calculateSetExtendedResolution() throws IOException {
 		fullResolutionHeight = resolutionHeight;
 		fullResolutionWidth = resolutionWidth + remoteResolutionWidth;
+		
+		try {
+			// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
+			String[] xrandr = new String[] { "xrandr",
+					"--fb " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output VGA-1",
+					"--panning " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
+			ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
+			Process pXrandr = pbXrandr.start();
+			pXrandr.waitFor();
 
-		// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
-		String[] xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight,
-				"--output VGA-1", "--panning " + fullResolutionWidth + "x" + fullResolutionHeight + "+0+0" };
-		new ProcessBuilder(xrandr).start();
-
-		// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
-		xrandr = new String[] { "xrandr", "--fb " + fullResolutionWidth + "x" + fullResolutionHeight, "--output VGA-1",
-				"--panning " + resolutionWidth + "x" + resolutionHeight + "+0+0" };
-		new ProcessBuilder(xrandr).start();
+			// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
+			xrandr = new String[] { "xrandr",
+					"--fb " + fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output VGA-1",
+					"--panning " + resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
+			pbXrandr = new ProcessBuilder(xrandr);
+			pXrandr = pbXrandr.start();
+			pXrandr.waitFor();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private void resetResolution() throws IOException {
 		// xrandr -s 1920x1080
-		String[] xrandr = new String[] { "xrandr", "-s " + resolutionWidth + "x" + resolutionHeight };
+		String[] xrandr = new String[] { "xrandr", "-s " + resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
 		new ProcessBuilder(xrandr).start();
 	}
 
 	private byte[] generateScreenshot() throws IOException {
-		String[] shutter = new String[] { "shutter", "--select=100,100,500,500", "--output=" + SSNAME,
+		String[] shutter = new String[] { "shutter", "--select=1,1,1680,1050", "--output=" + SSNAME,
 				"--include_cursor", "--exit_after_capture", "--no_session" };
 
-		new ProcessBuilder(shutter).start();
-		
+		try {
+			ProcessBuilder pbShutter = new ProcessBuilder(shutter);
+			Process pShutter = pbShutter.start();
+			pShutter.waitFor();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new byte[0];
+		}
+
 		return Files.readAllBytes(new File(SSNAME).toPath());
 	}
 }

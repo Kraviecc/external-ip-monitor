@@ -28,7 +28,7 @@ public class JavaSocket {
         is.read(receivedBytes, 0, len);
         String received = new String(receivedBytes, 0, len);
         
-        System.out.println("Received: " + received);
+//        System.out.println("Received: " + received);
         
         return received;
 	}
@@ -42,9 +42,12 @@ public class JavaSocket {
       toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
       toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
       
+      //System.out.println("Sent size");
       os.write(toSendLenBytes);
-      getRemoteResolution();
+      //getRemoteResolution();
+      //System.out.println("Sent data: " + data.length);
       os.write(data);
+      getRemoteResolution(); 
 	}
 	
 	public static void disconnect(){
