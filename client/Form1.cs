@@ -15,7 +15,7 @@ namespace client
     public partial class Form1 : Form
     {
         private ImageForm imageForm = new ImageForm();
-        private AsynchronousClient asynchronousClient;
+        private SynchronousClient asynchronousClient;
 
         public Form1()
         {
@@ -24,7 +24,7 @@ namespace client
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            asynchronousClient = new AsynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
+            asynchronousClient = new SynchronousClient(Convert.ToInt32(txtPort.Text), txtAddress.Text);
 
             string resolution = System.Windows.SystemParameters.PrimaryScreenWidth.ToString()
                         + "x" + System.Windows.SystemParameters.PrimaryScreenHeight.ToString();
@@ -32,7 +32,7 @@ namespace client
             {
                 asynchronousClient.StartClient(resolution);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
                 return;
@@ -47,16 +47,18 @@ namespace client
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
-                    imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(asynchronousClient.Receive()));
+                    var screenshot = asynchronousClient.Receive();
+                    if (screenshot.Length != 0)
+                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(screenshot));
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
             }
         }
     }
