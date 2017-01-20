@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace client
 {
@@ -25,27 +26,29 @@ namespace client
 
         public void StartClient(string resolution)
         {
-            try
-            {
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(IP);
+            IPAddress[] IPs = Dns.GetHostAddresses(IP);
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(IP);
 
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+            IPAddress ipAddress = null;
 
-                client = new Socket(ipAddress.AddressFamily,
-                    SocketType.Stream, ProtocolType.Tcp);
+            if (ipHostInfo.AddressList.Length > 0)
+                ipAddress = ipHostInfo.AddressList[0];
+            else if (IPs.Length > 0)
+                ipAddress = IPs[0];
+            else
+                throw new Exception("Nie odnaleziono serwera o adresie: " + IP);
 
-                client.Connect(remoteEP);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
-                // length
-                client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount(resolution)));
-                // data
-                client.Send(Encoding.ASCII.GetBytes(resolution));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            client = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            client.Connect(remoteEP);
+
+            // length
+            client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount(resolution)));
+            // data
+            client.Send(Encoding.ASCII.GetBytes(resolution));
         }
 
         public byte[] Receive()
@@ -69,7 +72,7 @@ namespace client
 
                 while (bytesPosition != length)
                 {
-                    receivedBytes = client.Receive(data,bytesPosition,length - bytesPosition,SocketFlags.None);
+                    receivedBytes = client.Receive(data, bytesPosition, length - bytesPosition, SocketFlags.None);
                     bytesPosition += receivedBytes;
                 }
             }
