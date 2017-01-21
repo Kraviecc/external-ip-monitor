@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,7 +15,7 @@ namespace client
 {
     public partial class Form1 : Form
     {
-        private ImageForm imageForm = new ImageForm();
+        private ImageForm imageForm;
         private SynchronousClient asynchronousClient;
 
         public Form1()
@@ -40,6 +41,7 @@ namespace client
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
 
+            imageForm = new ImageForm();
             imageForm.Show();
 
             bw.RunWorkerAsync();
@@ -57,7 +59,12 @@ namespace client
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error: " + ex.Message);
+                    MessageBox.Show("Error: " + ex.Message);
+                    asynchronousClient.Disconnect();
+                    Invoke((MethodInvoker)delegate {
+                        imageForm.Close();
+                    });
+                    return;
                 }
             }
         }
