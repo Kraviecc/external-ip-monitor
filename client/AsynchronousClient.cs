@@ -45,6 +45,8 @@ namespace client
 
             client.Connect(remoteEP);
 
+            client.ReceiveTimeout = 10000; // 10sec
+
             // length
             client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount(resolution)));
             // data
@@ -90,8 +92,15 @@ namespace client
 
         public void Disconnect()
         {
-            client.Shutdown(SocketShutdown.Both);
-            client.Close();
+            try
+            {
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
