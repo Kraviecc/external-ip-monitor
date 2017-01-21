@@ -24,12 +24,12 @@ public class MainWindow {
 	private int port;
 	private Double resolutionWidth;
 	private Double resolutionHeight;
-	private Double remoteResolutionHeight;
 	private Double remoteResolutionWidth;
 	private Double fullResolutionHeight;
 	private Double fullResolutionWidth;
 	private boolean interrupt = false;
 	private final String SSNAME = "ss.jpg";
+	private JavaSocket javaSocket = null;
 
 	/**
 	 * Launch the application.
@@ -66,60 +66,63 @@ public class MainWindow {
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				port = Integer.parseInt(txtPort.getText());
+				Runnable myRunnable = new Runnable() {
+					public void run() {
+						port = Integer.parseInt(txtPort.getText());
+						GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+						resolutionWidth = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds()
+								.getWidth();
+						resolutionHeight = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds()
+								.getHeight();
 
-				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-				resolutionWidth = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getWidth();
-				resolutionHeight = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getHeight();
+						try {
+							if (javaSocket == null)
+								javaSocket = new JavaSocket(port);
 
-				try {
-					JavaSocket.connect(port);
+							javaSocket.connect();
 
-					String remoteResolution = JavaSocket.getRemoteResolution();
-					String[] remoteWidthHeight = remoteResolution.split("x");
+							String remoteResolution = javaSocket.getRemoteResolution();
+							String[] remoteWidthHeight = remoteResolution.split("x");
 
-					if (remoteWidthHeight.length == 2) {
-						remoteResolutionWidth = Double.parseDouble(remoteWidthHeight[0]);
-						remoteResolutionHeight = Double.parseDouble(remoteWidthHeight[1]);
-					} else {
-						JOptionPane.showMessageDialog(null, "Error: " + "wrong resolution format from remote device.");
-						JavaSocket.disconnect();
-						return;
-					}
+							if (remoteWidthHeight.length == 2) {
+								remoteResolutionWidth = Double.parseDouble(remoteWidthHeight[0]);
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Error: " + "wrong resolution format from remote device.");
+								javaSocket.disconnectClient();
+								return;
+							}
 
-					calculateSetExtendedResolution();
+							calculateSetExtendedResolution();
 
-					Runnable myRunnable = new Runnable() {
+						} catch (IOException exception) {
+							JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());
+							javaSocket.disconnectClient();
+							return;
+						}
 
-						public void run() {
-							while (true) {
-								try {
-									if (interrupt) {
-										resetResolution();
-										JavaSocket.disconnect();
-										break;
-									}
-
-									byte[] screenshot = generateScreenshot();
-
-									JavaSocket.send(screenshot);
-								} catch (IOException e) {
-									System.out.println("Error: " + e.getMessage());
-									JavaSocket.disconnect();
+						while (true) {
+							try {
+								if (interrupt) {
+									resetResolution();
+									javaSocket.disconnectClient();
 									return;
 								}
+
+								byte[] screenshot = generateScreenshot();
+
+								javaSocket.send(screenshot);
+							} catch (IOException e) {
+								System.out.println("Error: " + e.getMessage());
+								javaSocket.disconnectClient();
+								return;
 							}
-						};
+						}
 					};
+				};
 
-					Thread thread = new Thread(myRunnable);
-					thread.start();
-
-				} catch (IOException exception) {
-					JOptionPane.showMessageDialog(null, "Error: " + exception.getMessage());
-					JavaSocket.disconnect();
-					return;
-				}
+				Thread thread = new Thread(myRunnable);
+				thread.start();
 			}
 		});
 
@@ -146,21 +149,21 @@ public class MainWindow {
 	private void calculateSetExtendedResolution() throws IOException {
 		fullResolutionHeight = resolutionHeight;
 		fullResolutionWidth = resolutionWidth + remoteResolutionWidth;
-		
+
 		try {
 			// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
-			String[] xrandr = new String[] { "xrandr",
-					"--fb", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
+			String[] xrandr = new String[] { "xrandr", "--fb",
+					fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
 					"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
 			ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
 			Process pXrandr = pbXrandr.start();
 			pXrandr.waitFor();
-			
+
 			Thread.sleep(300);
-			
+
 			// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
-			xrandr = new String[] { "xrandr",
-					"--fb", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
+			xrandr = new String[] { "xrandr", "--fb",
+					fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
 					"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
 			pbXrandr = new ProcessBuilder(xrandr);
 			pXrandr = pbXrandr.start();
@@ -172,15 +175,16 @@ public class MainWindow {
 
 	private void resetResolution() throws IOException {
 		// xrandr -s 1920x1080
-		String[] xrandr = new String[] { "xrandr", "-s", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
+		String[] xrandr = new String[] { "xrandr", "-s",
+				resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
 		new ProcessBuilder(xrandr).start();
 	}
 
 	private byte[] generateScreenshot() throws IOException {
-		String[] shutter = new String[] { "shutter", "--select=" + resolutionWidth.intValue() + ",1,"
-				+ remoteResolutionWidth.intValue() 
-				+ "," + resolutionHeight.intValue(), "--output=" + SSNAME,
-				"--include_cursor", "--exit_after_capture", "--no_session" };
+		String[] shutter = new String[] { "shutter",
+				"--select=" + resolutionWidth.intValue() + ",1," + remoteResolutionWidth.intValue() + ","
+						+ resolutionHeight.intValue(),
+				"--output=" + SSNAME, "--include_cursor", "--exit_after_capture", "--no_session" };
 
 		try {
 			ProcessBuilder pbShutter = new ProcessBuilder(shutter);

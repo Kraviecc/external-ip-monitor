@@ -7,19 +7,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class JavaSocket {
-	private static ServerSocket clientSocket;
-	private static InputStream is;
-	private static OutputStream os;
+	private ServerSocket clientSocket;
+	private Socket socket;
+	private InputStream is;
+	private OutputStream os;
 	
-	public static void connect(int port) throws IOException{
+	public JavaSocket(int port) throws IOException{
 		clientSocket = new ServerSocket(port, 10);
-		Socket socket = clientSocket.accept();
+	}
+	
+	public void connect() throws IOException{
+		socket = clientSocket.accept();
 		
 		is = socket.getInputStream();
         os = socket.getOutputStream();
 	}
 	
-	public static String getRemoteResolution() throws IOException{
+	public String getRemoteResolution() throws IOException{
         byte[] lenBytes = new byte[4];
         is.read(lenBytes, 0, 4);
         int len = (((lenBytes[3] & 0xff) << 24) | ((lenBytes[2] & 0xff) << 16) |
@@ -28,12 +32,12 @@ public class JavaSocket {
         is.read(receivedBytes, 0, len);
         String received = new String(receivedBytes, 0, len);
         
-//        System.out.println("Received: " + received);
+        //System.out.println("Received: " + received);
         
         return received;
 	}
 	
-	public static void send(byte[] data) throws IOException{
+	public void send(byte[] data) throws IOException{
       int toSendLen = data.length;
       byte[] toSendLenBytes = new byte[4];
       
@@ -50,7 +54,17 @@ public class JavaSocket {
       getRemoteResolution(); 
 	}
 	
-	public static void disconnect(){
+	public void disconnectClient(){
+		try {
+			socket.close();
+			is.close();
+			os.close();
+		} catch (IOException e) {
+			System.out.println("Error while disconnecting.");
+		}
+	}
+	
+	public void disconnectSocket(){
 		try {
 			clientSocket.close();
 		} catch (IOException e) {
