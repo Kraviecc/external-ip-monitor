@@ -28,8 +28,10 @@ public class MainWindow {
 	private Double fullResolutionHeight;
 	private Double fullResolutionWidth;
 	private boolean interrupt = false;
-	private final String SSNAME = "ss.jpg";
+	private final String SSNAME = "ss.bmp";
 	private JavaSocket javaSocket = null;
+	private byte[] previousScreenshot = null;
+	private byte[] actualScreenshot = null;
 
 	/**
 	 * Launch the application.
@@ -70,8 +72,7 @@ public class MainWindow {
 					public void run() {
 						port = Integer.parseInt(txtPort.getText());
 						GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-						resolutionWidth = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds()
-								.getWidth();
+						resolutionWidth = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds().getWidth();
 						resolutionHeight = ge.getDefaultScreenDevice().getDefaultConfiguration().getBounds()
 								.getHeight();
 
@@ -109,9 +110,16 @@ public class MainWindow {
 									return;
 								}
 
-								byte[] screenshot = generateScreenshot();
+								actualScreenshot = generateScreenshot();
 
-								javaSocket.send(screenshot);
+								if (previousScreenshot == null)
+									javaSocket.send(actualScreenshot);
+								else {
+									String toSend = computeDiff(previousScreenshot, actualScreenshot);
+									javaSocket.send(toSend.getBytes());
+								}
+								
+								previousScreenshot = actualScreenshot.clone();
 							} catch (IOException e) {
 								System.out.println("Error: " + e.getMessage());
 								javaSocket.disconnectClient();
@@ -196,5 +204,28 @@ public class MainWindow {
 		}
 
 		return Files.readAllBytes(new File(SSNAME).toPath());
+	}
+
+	private String computeDiff(byte[] previous, byte[] actual) {
+		StringBuilder sb = new StringBuilder();
+		int length = 0;
+
+		if (previous.length > actual.length)
+			length = actual.length;
+		else
+			length = previous.length;
+
+		for (int i = 0; i < length; i++) {
+			if (previous[i] != actual[i])
+				sb.append(actual[i] + " " + i + "\n");
+		}
+
+		if (actual.length > previous.length) {
+			for (int i = previous.length; i < actual.length; i++) {
+				sb.append(actual[i] + " " + i + "\n");
+			}
+		}
+
+		return sb.toString();
 	}
 }
