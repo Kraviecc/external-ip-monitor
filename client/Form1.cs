@@ -17,6 +17,8 @@ namespace client
     {
         private ImageForm imageForm;
         private SynchronousClient asynchronousClient;
+        private byte[] previousScreenshot;
+        private byte[] actualScreenshot;
 
         public Form1()
         {
@@ -53,20 +55,62 @@ namespace client
             {
                 try
                 {
-                    var screenshot = asynchronousClient.Receive();
-                    if (screenshot.Length != 0)
-                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(screenshot));
+                    actualScreenshot = asynchronousClient.Receive();
+
+                    if (previousScreenshot == null)
+                    {
+                        previousScreenshot = new byte[actualScreenshot.Length];
+                        actualScreenshot.CopyTo(previousScreenshot, 0);
+                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
+                    }
+                    else
+                    {
+                        if (actualScreenshot.Length > 0)
+                            previousScreenshot = mergeScreenshots(previousScreenshot, actualScreenshot);
+
+                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
+                    }
+
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error: " + ex.Message);
                     asynchronousClient.Disconnect();
-                    Invoke((MethodInvoker)delegate {
+                    Invoke((MethodInvoker)delegate
+                    {
                         imageForm.Close();
                     });
                     return;
                 }
             }
+        }
+
+        private byte[] mergeScreenshots(byte[] previous, byte[] actual)
+        {
+            byte[] mergedScreenshot;
+            var valuesAndPositions = Encoding.Default.GetString(actual);
+            var lines = valuesAndPositions.Split('\n');
+            var length = Convert.ToInt32(lines.ElementAt(lines.Length - 2).Split(' ')[1]);
+            var positions = valuesAndPositions.Split('\n').ToList();
+
+            if (length > previous.Length)
+                mergedScreenshot = new byte[length];
+            else
+                mergedScreenshot = new byte[previous.Length];
+
+            previous.CopyTo(mergedScreenshot, 0);
+
+            foreach (var pos in positions)
+            {
+                if (pos.Split(' ').Length == 2)
+                {
+                    unchecked
+                    {
+                        mergedScreenshot[Convert.ToInt32(pos.Split(' ')[1])] = (byte)Convert.ToSByte(pos.Split(' ')[0]);
+                    }
+                }
+            }
+            return mergedScreenshot;
         }
     }
 }
