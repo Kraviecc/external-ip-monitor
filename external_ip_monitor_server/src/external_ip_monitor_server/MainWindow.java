@@ -28,7 +28,7 @@ public class MainWindow {
 	private Double fullResolutionHeight;
 	private Double fullResolutionWidth;
 	private boolean interrupt = false;
-	private final String SSNAME = "ss.bmp";
+	private final String SSNAME = "ss.jpg";
 	private JavaSocket javaSocket = null;
 	private byte[] previousScreenshot = null;
 	private byte[] actualScreenshot = null;
@@ -109,9 +109,11 @@ public class MainWindow {
 									javaSocket.disconnectClient();
 									return;
 								}
-
+								long start = System.currentTimeMillis();
 								actualScreenshot = generateScreenshot();
-
+								long stop = System.currentTimeMillis();
+								System.out.println(stop-start);
+								
 								if (previousScreenshot == null)
 									javaSocket.send(actualScreenshot);
 								else {
@@ -189,10 +191,10 @@ public class MainWindow {
 	}
 
 	private byte[] generateScreenshot() throws IOException {
-		String[] shutter = new String[] { "shutter",
-				"--select=" + resolutionWidth.intValue() + ",1," + remoteResolutionWidth.intValue() + ","
-						+ resolutionHeight.intValue(),
-				"--output=" + SSNAME, "--include_cursor", "--exit_after_capture", "--no_session" };
+		String[] shutter = new String[] { "maim",
+				"--geometry=" + remoteResolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+"
+						+ resolutionWidth.intValue() + "+0",
+				SSNAME };
 
 		try {
 			ProcessBuilder pbShutter = new ProcessBuilder(shutter);
