@@ -60,10 +60,6 @@ namespace client
             client.Receive(lengthByte, 4, SocketFlags.None);
             int length = BitConverter.ToInt32(lengthByte, 0);
 
-            // send ok
-            //client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
-            //client.Send(Encoding.ASCII.GetBytes("OK"));
-
             // data
             byte[] data = new byte[0];
             try
@@ -84,8 +80,8 @@ namespace client
                 Console.WriteLine("Receive ss: " + ex.Message);
             }
             // send ok
-            client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
-            client.Send(Encoding.ASCII.GetBytes("OK"));
+            //client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
+            //client.Send(Encoding.ASCII.GetBytes("OK"));
 
             return data;
         }

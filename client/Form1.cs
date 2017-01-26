@@ -56,25 +56,31 @@ namespace client
                 try
                 {
                     actualScreenshot = asynchronousClient.Receive();
+                    imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(actualScreenshot));
 
-                    if (previousScreenshot == null)
-                    {
-                        previousScreenshot = new byte[actualScreenshot.Length];
-                        actualScreenshot.CopyTo(previousScreenshot, 0);
-                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
-                    }
-                    else
-                    {
-                        if (actualScreenshot.Length > 0)
-                            previousScreenshot = mergeScreenshots(previousScreenshot, actualScreenshot);
+                    //if (previousScreenshot == null)
+                    //{
+                    //    previousScreenshot = new byte[actualScreenshot.Length];
+                    //    actualScreenshot.CopyTo(previousScreenshot, 0);
+                    //    imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
+                    //}
+                    //else
+                    //{
+                    //    if (actualScreenshot.Length > 0)
+                    //    {
+                    //        var watch = System.Diagnostics.Stopwatch.StartNew();
+                    //        previousScreenshot = mergeScreenshots(previousScreenshot, actualScreenshot);
+                    //        watch.Stop();
+                    //        Console.WriteLine(watch.ElapsedMilliseconds);
+                    //    }
 
-                        imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
-                    }
+                    //    imageForm.pictureBox.Image = Image.FromStream(new MemoryStream(previousScreenshot));
+                    //}
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    MessageBox.Show("Error: " + ex.Message);
+                    MessageBox.Show("Server disconnected");
                     asynchronousClient.Disconnect();
                     Invoke((MethodInvoker)delegate
                     {
@@ -104,9 +110,16 @@ namespace client
             {
                 if (pos.Split(' ').Length == 2)
                 {
-                    unchecked
+                    try
                     {
-                        mergedScreenshot[Convert.ToInt32(pos.Split(' ')[1])] = (byte)Convert.ToSByte(pos.Split(' ')[0]);
+                        unchecked
+                        {
+                            mergedScreenshot[Convert.ToInt32(pos.Split(' ')[1])] = (byte)Convert.ToSByte(pos.Split(' ')[0]);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
                     }
                 }
             }

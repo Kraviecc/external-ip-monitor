@@ -15,6 +15,7 @@ namespace client
         public ImageForm()
         {
             InitializeComponent();
+            Cursor.Hide();
         }
     }
 }
