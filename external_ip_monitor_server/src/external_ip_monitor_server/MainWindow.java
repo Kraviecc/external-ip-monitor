@@ -22,6 +22,7 @@ public class MainWindow {
 
 	private JFrame frame;
 	private JTextField txtPort;
+	private JTextField txtOutput;
 	private JRadioButton left;
 	private JRadioButton right;
 
@@ -67,7 +68,7 @@ public class MainWindow {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 250, 150);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new GridLayout(3, 2, 0, 0));
+		frame.getContentPane().setLayout(new GridLayout(4, 2, 0, 0));
 
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
@@ -122,9 +123,10 @@ public class MainWindow {
 //									javaSocket.send(actualScreenshot);
 //								else {
 //									String toSend = computeDiff(previousScreenshot, actualScreenshot);
+//
 //									javaSocket.send(toSend.getBytes());
 //								}
-
+//								
 //								previousScreenshot = actualScreenshot.clone();
 							} catch (IOException e) {
 								System.out.println("Error: " + e.getMessage());
@@ -149,6 +151,17 @@ public class MainWindow {
 		txtPort.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(txtPort);
 		txtPort.setColumns(10);
+		
+		JLabel lblOutput = new JLabel("Output [xrandr]");
+		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
+		frame.getContentPane().add(lblOutput);
+
+		txtOutput = new JTextField();
+		txtOutput.setText("LVDS-1");
+		txtOutput.setHorizontalAlignment(SwingConstants.CENTER);
+		frame.getContentPane().add(txtOutput);
+		txtOutput.setColumns(10);
+		
 		frame.getContentPane().add(btnConnect);
 
 		JButton btnDisconnect = new JButton("Disconnect");
@@ -177,9 +190,8 @@ public class MainWindow {
 
 		try {
 			if (right.isSelected()) {
-				// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
 				String[] xrandr = new String[] { "xrandr", "--fb",
-						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", txtOutput.getText(),
 						"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
 				ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
 				Process pXrandr = pbXrandr.start();
@@ -187,17 +199,15 @@ public class MainWindow {
 
 				Thread.sleep(300);
 
-				// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
 				xrandr = new String[] { "xrandr", "--fb",
-						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", txtOutput.getText(),
 						"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
 				pbXrandr = new ProcessBuilder(xrandr);
 				pXrandr = pbXrandr.start();
 				pXrandr.waitFor();
 			} else {
-				// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
 				String[] xrandr = new String[] { "xrandr", "--fb",
-						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", txtOutput.getText(),
 						"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
 				ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
 				Process pXrandr = pbXrandr.start();
@@ -205,9 +215,8 @@ public class MainWindow {
 
 				Thread.sleep(300);
 
-				// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
 				xrandr = new String[] { "xrandr", "--fb",
-						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", txtOutput.getText(),
 						"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+"
 								+ remoteResolutionWidth.intValue() + "+0" };
 				pbXrandr = new ProcessBuilder(xrandr);
@@ -220,7 +229,6 @@ public class MainWindow {
 	}
 
 	private void resetResolution() throws IOException {
-		// xrandr -s 1920x1080
 		String[] xrandr = new String[] { "xrandr", "-s",
 				resolutionWidth.intValue() + "x" + resolutionHeight.intValue() };
 		new ProcessBuilder(xrandr).start();
