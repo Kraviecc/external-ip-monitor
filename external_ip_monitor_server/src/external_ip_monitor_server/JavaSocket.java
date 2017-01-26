@@ -49,7 +49,7 @@ public class JavaSocket {
       //System.out.println("Sent size");
       os.write(toSendLenBytes);
       //getRemoteResolution();
-      System.out.println("Sent data: " + data.length);
+      //System.out.println("Sent data: " + data.length);
       os.write(data);
       //getRemoteResolution(); 
 	}

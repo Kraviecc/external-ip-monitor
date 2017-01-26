@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import javax.swing.JButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,6 +22,8 @@ public class MainWindow {
 
 	private JFrame frame;
 	private JTextField txtPort;
+	private JRadioButton left;
+	private JRadioButton right;
 
 	private int port;
 	private Double resolutionWidth;
@@ -61,7 +65,7 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 250, 150);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(3, 2, 0, 0));
 
@@ -109,19 +113,19 @@ public class MainWindow {
 									javaSocket.disconnectClient();
 									return;
 								}
-								long start = System.currentTimeMillis();
+
 								actualScreenshot = generateScreenshot();
-								long stop = System.currentTimeMillis();
-								System.out.println(stop-start);
-								
-								if (previousScreenshot == null)
-									javaSocket.send(actualScreenshot);
-								else {
-									String toSend = computeDiff(previousScreenshot, actualScreenshot);
-									javaSocket.send(toSend.getBytes());
-								}
-								
-								previousScreenshot = actualScreenshot.clone();
+
+								javaSocket.send(actualScreenshot);
+
+//								if (previousScreenshot == null)
+//									javaSocket.send(actualScreenshot);
+//								else {
+//									String toSend = computeDiff(previousScreenshot, actualScreenshot);
+//									javaSocket.send(toSend.getBytes());
+//								}
+
+//								previousScreenshot = actualScreenshot.clone();
 							} catch (IOException e) {
 								System.out.println("Error: " + e.getMessage());
 								javaSocket.disconnectClient();
@@ -154,6 +158,17 @@ public class MainWindow {
 			}
 		});
 		frame.getContentPane().add(btnDisconnect);
+
+		ButtonGroup btnGroup = new ButtonGroup();
+		left = new JRadioButton("left");
+		left.setHorizontalAlignment(JRadioButton.RIGHT);
+		right = new JRadioButton("right");
+		right.setHorizontalAlignment(JRadioButton.LEFT);
+		btnGroup.add(left);
+		btnGroup.add(right);
+		right.setSelected(true);
+		frame.getContentPane().add(left);
+		frame.getContentPane().add(right);
 	}
 
 	private void calculateSetExtendedResolution() throws IOException {
@@ -161,23 +176,44 @@ public class MainWindow {
 		fullResolutionWidth = resolutionWidth + remoteResolutionWidth;
 
 		try {
-			// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
-			String[] xrandr = new String[] { "xrandr", "--fb",
-					fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
-					"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
-			ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
-			Process pXrandr = pbXrandr.start();
-			pXrandr.waitFor();
+			if (right.isSelected()) {
+				// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
+				String[] xrandr = new String[] { "xrandr", "--fb",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
+				ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
+				Process pXrandr = pbXrandr.start();
+				pXrandr.waitFor();
 
-			Thread.sleep(300);
+				Thread.sleep(300);
 
-			// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
-			xrandr = new String[] { "xrandr", "--fb",
-					fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "VGA-1",
-					"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
-			pbXrandr = new ProcessBuilder(xrandr);
-			pXrandr = pbXrandr.start();
-			pXrandr.waitFor();
+				// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
+				xrandr = new String[] { "xrandr", "--fb",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0" };
+				pbXrandr = new ProcessBuilder(xrandr);
+				pXrandr = pbXrandr.start();
+				pXrandr.waitFor();
+			} else {
+				// xrandr --fb 3840x1080 --output VGA-1 --panning 3840x1080+0+0
+				String[] xrandr = new String[] { "xrandr", "--fb",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						"--panning", fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue() + "+0+0" };
+				ProcessBuilder pbXrandr = new ProcessBuilder(xrandr);
+				Process pXrandr = pbXrandr.start();
+				pXrandr.waitFor();
+
+				Thread.sleep(300);
+
+				// xrandr --fb 3840x1080 --output VGA-1 --panning 1920x1080+0+0
+				xrandr = new String[] { "xrandr", "--fb",
+						fullResolutionWidth.intValue() + "x" + fullResolutionHeight.intValue(), "--output", "LVDS-1",
+						"--panning", resolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+"
+								+ remoteResolutionWidth.intValue() + "+0" };
+				pbXrandr = new ProcessBuilder(xrandr);
+				pXrandr = pbXrandr.start();
+				pXrandr.waitFor();
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -191,18 +227,31 @@ public class MainWindow {
 	}
 
 	private byte[] generateScreenshot() throws IOException {
-		String[] shutter = new String[] { "maim",
-				"--geometry=" + remoteResolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+"
-						+ resolutionWidth.intValue() + "+0",
-				SSNAME };
+		if (right.isSelected()) {
+			String[] shutter = new String[] { "maim", "--geometry=" + remoteResolutionWidth.intValue() + "x"
+					+ resolutionHeight.intValue() + "+" + resolutionWidth.intValue() + "+0", SSNAME };
 
-		try {
-			ProcessBuilder pbShutter = new ProcessBuilder(shutter);
-			Process pShutter = pbShutter.start();
-			pShutter.waitFor();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return new byte[0];
+			try {
+				ProcessBuilder pbShutter = new ProcessBuilder(shutter);
+				Process pShutter = pbShutter.start();
+				pShutter.waitFor();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				return new byte[0];
+			}
+		} else {
+			String[] shutter = new String[] { "maim",
+					"--geometry=" + remoteResolutionWidth.intValue() + "x" + resolutionHeight.intValue() + "+0+0",
+					SSNAME };
+
+			try {
+				ProcessBuilder pbShutter = new ProcessBuilder(shutter);
+				Process pShutter = pbShutter.start();
+				pShutter.waitFor();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				return new byte[0];
+			}
 		}
 
 		return Files.readAllBytes(new File(SSNAME).toPath());
