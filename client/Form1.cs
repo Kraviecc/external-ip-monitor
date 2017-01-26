@@ -69,6 +69,7 @@ namespace client
                     //    if (actualScreenshot.Length > 0)
                     //    {
                     //        var watch = System.Diagnostics.Stopwatch.StartNew();
+
                     //        previousScreenshot = mergeScreenshots(previousScreenshot, actualScreenshot);
                     //        watch.Stop();
                     //        Console.WriteLine(watch.ElapsedMilliseconds);

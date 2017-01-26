@@ -10,12 +10,10 @@ namespace client
 {
     public class SynchronousClient
     {
-        // The port number for the remote device.
         private int port;
         private string IP;
         private Socket client;
 
-        // The response from the remote device.
         private List<byte> response = new List<byte>();
 
         public SynchronousClient(int port, string IP)
@@ -47,20 +45,16 @@ namespace client
 
             client.ReceiveTimeout = 10000; // 10sec
 
-            // length
             client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount(resolution)));
-            // data
             client.Send(Encoding.ASCII.GetBytes(resolution));
         }
 
         public byte[] Receive()
         {
-            // length
             byte[] lengthByte = new byte[4];
             client.Receive(lengthByte, 4, SocketFlags.None);
             int length = BitConverter.ToInt32(lengthByte, 0);
 
-            // data
             byte[] data = new byte[0];
             try
             {
@@ -79,9 +73,6 @@ namespace client
                 Console.WriteLine("Receive length: " + length);
                 Console.WriteLine("Receive ss: " + ex.Message);
             }
-            // send ok
-            //client.Send(BitConverter.GetBytes(Encoding.ASCII.GetByteCount("OK")));
-            //client.Send(Encoding.ASCII.GetBytes("OK"));
 
             return data;
         }
