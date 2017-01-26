@@ -51,7 +51,7 @@ public class JavaSocket {
       //getRemoteResolution();
       //System.out.println("Sent data: " + data.length);
       os.write(data);
-      getRemoteResolution(); 
+      //getRemoteResolution(); 
 	}
 	
 	public void disconnectClient(){
